@@ -31,7 +31,8 @@ all:
     remote_user: root
     working_time: "{{ ansible_date_time.iso8601_basic_short }}"
     service_stacks:
-      - docker_repository: cr.github.io/my-image
+      - docker_repository: cr.github.io
+        image_name: my-image
         image_version: my-tag
         working_directory: /var/www/econsul/econsul_deployment
     timezone: "Asia/Ho_Chi_Minh"
