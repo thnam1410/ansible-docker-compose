@@ -1,0 +1,6 @@
+---
+- name: Deploy docker-compose-service
+  hosts: web_hosts
+  remote_user: root
+  roles:
+    - docker-compose

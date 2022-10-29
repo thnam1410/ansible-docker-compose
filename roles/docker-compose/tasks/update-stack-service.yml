@@ -1,0 +1,37 @@
+---
+- name: create backup environment history directory
+  command: mkdir -p {{ item.working_directory }}/.history
+
+- name: "Create history latest docker-compose file"
+  ansible.builtin.copy:
+    src : "{{ item.working_directory }}/docker-compose.yml"
+    remote_src: true
+    dest: "{{ item.working_directory }}/.history/{{ working_time }}_docker-compose.yml"
+    owner: '{{remote_user}}'
+    group: '{{remote_user}}'
+    mode: '0644'
+    backup: false
+
+- name: "Create stable env file for rollback"
+  ansible.builtin.copy:
+      src : "{{ item.working_directory }}/docker-compose.yml"
+      remote_src: true
+      dest: "{{ item.working_directory }}/.history/stable-docker-compose.yml"
+      owner: '{{remote_user}}'
+      group: '{{remote_user}}'
+      mode: '0644'
+      backup: false
+
+- name: Replace versioning image service
+  ansible.builtin.replace:
+    path: "{{ item.working_directory }}/docker-compose.yml"
+    regexp: '{{ item.docker_repository }}/{{item.image_name}}:.*'
+    replace: '{{ item.docker_repository }}/{{item.image_name}}:{{ item.image_version }}'
+
+- name: Force recreate update docker service
+  args:
+    chdir: "{{ item.working_directory }}"
+  command: docker-compose up -d --force-recreate
+  register: out
+
+- debug: var=out.stdout_lines

@@ -1,0 +1,6 @@
+---
+  # tasks file for deploy-dev
+  - name: 'update docker compose stack services'
+    include_tasks: update-stack-service.yml
+    with_items: 
+    - "{{ service_stacks }}"
