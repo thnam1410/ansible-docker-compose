@@ -28,6 +28,20 @@
     regexp: '{{ item.docker_repository }}/{{item.image_name}}:.*'
     replace: '{{ item.docker_repository }}/{{item.image_name}}:{{ item.image_version }}'
 
+- name: Get ECR token
+  when: ecr_login|default(false) | bool
+  shell: "aws ecr get-login-password --region {{item.aws_region}}"
+  register: ecr_token
+
+- name: Log into ECR registry
+  when: ecr_login|default(false) | bool
+  docker_login:
+    registry_url: "{{ item.docker_repository }}"
+    debug: yes
+    username: "AWS"
+    password: "{{ ecr_token.stdout }}"
+    reauthorize: yes
+
 - name: Force recreate update docker service
   args:
     chdir: "{{ item.working_directory }}"
