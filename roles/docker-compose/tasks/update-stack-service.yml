@@ -33,6 +33,7 @@
     chdir: "{{ item.working_directory }}"
   command: docker-compose pull
   register: out
+  
 - name: Log into ECR registry
   shell: "aws ecr get-login-password --region {{ item.aws_region }} | docker login --username AWS --password-stdin {{ item.docker_repository }}"
   register: ecr_login_result
