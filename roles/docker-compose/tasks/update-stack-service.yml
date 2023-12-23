@@ -28,6 +28,11 @@
     regexp: '{{ item.docker_repository }}/{{item.image_name}}:.*'
     replace: '{{ item.docker_repository }}/{{item.image_name}}:{{ item.image_version }}'
 
+- name: Pull new image
+  args:
+    chdir: "{{ item.working_directory }}"
+  command: docker-compose pull
+  register: out
 - name: Log into ECR registry
   shell: "aws ecr get-login-password --region {{ item.aws_region }} | docker login --username AWS --password-stdin {{ item.docker_repository }}"
   register: ecr_login_result
@@ -41,7 +46,7 @@
 - name: Force recreate update docker service
   args:
     chdir: "{{ item.working_directory }}"
-  command: "{{ 'docker compose' if item.docker_compose_version == 2 else 'docker-compose' }} up -d --force-recreate"
+  command: "{{ 'docker compose' if item.docker_compose_version == 2 else 'docker-compose' }} up -d "
   register: out
 
 - debug: var=out.stdout_lines
