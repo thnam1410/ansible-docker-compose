@@ -47,7 +47,7 @@
 - name: Force recreate update docker service
   args:
     chdir: "{{ item.working_directory }}"
-  command: "{{ 'docker compose' if item.docker_compose_version | default(1) == 2 else 'docker-compose' }} up -d "
+  command: "{{ 'docker compose' if item.docker_compose_version | default(1) == 2 else 'docker-compose' }} up -d --force-recreate"
   register: out
 
 - debug: var=out.stdout_lines
